@@ -3,12 +3,12 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "plot61_namo"
+name = "plot61"
 version = "0.0.1"
 authors = [
   { name="Namo", email="author@example.com" },
 ]
-description = "A small example package"
+description = "A library for plotting ADCIRC output"
 readme = "README.md"
 requires-python = ">=3.6"
 classifiers = [
