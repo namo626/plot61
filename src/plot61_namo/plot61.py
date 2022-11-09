@@ -13,20 +13,20 @@ def setStyle():
     plt.rc('font',**{'family':'sans-serif','sans-serif':['Liberation Sans']})
 
 class GaugeList():
-    def __init__(self, filename):
+    def __init__(self, filename:str):
         self.names = readGaugeList(filename)
         self.namesDict = {idx: el for idx, el in enumerate(self.names)}
 
-    def gaugeName(self, i):
+    def gaugeName(self, i:int) -> str:
         return self.names[i-1]
 
-    def searchGauge(self, name):
+    def searchGauge(self, name:str) -> int:
         match = process.extractOne(name, self.namesDict)
         return match[-1]+1
 
 # Assume that each line has the format
 # 1   - 94.985000 29.681667 ! 8770613  ! NOAA_NOS ! Morgans Point
-def readGaugeList(filename):
+def readGaugeList(filename:str) -> [str]:
     names = []
     with open(filename) as f:
         l = f.readline()
@@ -37,14 +37,14 @@ def readGaugeList(filename):
             names.append(stationName)
     return names
 
-def convertGaugeName(name):
+def convertGaugeName(name:str) -> str:
     # Use all lowercase and replace space with underscore
     s = name.lower()
     s = s.replace(" ", "_")
     return s
 
 
-def getStation(file1, st):
+def getStation(file1:str, st:int) -> ([float],[float]):
     elev1 = []
 
     with open(file1) as f1:
@@ -148,7 +148,7 @@ class Storm():
         # If we have gauge data, plot it too
         # Assume the file is named gaugeN.csv
         #filename = self.root + '/' + self.gauges[station][0] + ".csv"
-        filename = self.root + '/gauge_' + station + ".csv"
+        filename = self.root + '/gauge_' + str(station) + ".csv"
         if plot_gauge:
             try:
                 time, elev = getGauge(filename, offset=offset)
@@ -164,7 +164,7 @@ class Storm():
                 plt.plot(time[id1:id2:3], elev[id1:id2:3], '--', markersize=7, label='Gauge data')
 
         plt.legend(loc='best', framealpha=0.0)
-        plt.xlabel('time (days)', fontsize=15)
+        plt.xlabel('Time (days)', fontsize=15)
         plt.ylabel('Surface elevation (m)', fontsize=15)
         plt.xticks(fontsize=13)
         plt.yticks(fontsize=13)
@@ -175,7 +175,7 @@ class Storm():
         self.plot(index, *args)
 
     def save(self, name):
-        self.f.savefig(self.root + '/' + name, dpi=300)
+        self.f.savefig(self.root + '/' + name, bbox_inches="tight", dpi=300)
 
     # Deprecated
     # def export(self, station):
