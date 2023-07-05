@@ -123,7 +123,7 @@ class Storm():
         self.gauges = gauges
 
 
-    def plot(self, station, *args, plot_gauge=True, adjustMean=False, shift=0, offset=12, timeframe=[]):
+    def plot(self, station, *args, plot_gauge=True, adjustMean=False, shift=0, offset=12, timeframe=[], grid=True, alpha=0.5):
         self.f = plt.figure()
 
         # Get gauge name
@@ -163,22 +163,23 @@ class Storm():
             label = self.files[key]
 
             # Calculate RMSE compared to gauge data
-            if hasGauge and adjustMean:
-                # First truncate the gauge data
-                gtime_t = gtime[gtime < np.max(time)]
-                gelev_t = gelev[gtime < np.max(time)]
+            if plot_gauge:
+                if hasGauge and adjustMean:
+                    # First truncate the gauge data
+                    gtime_t = gtime[gtime < np.max(time)]
+                    gelev_t = gelev[gtime < np.max(time)]
 
-                interp = interp1d(time, elev)
-                newDatum = interp(gtime_t)
+                    interp = interp1d(time, elev)
+                    newDatum = interp(gtime_t)
 
-                diff = gelev_t - newDatum
-                # Remove NaNs
-                diff = diff[~np.isnan(diff)]
-                meanErr = np.mean(diff)
-                # adjust the time series
-                elev = elev + meanErr
-                print("Adjustment: %.3f m" % meanErr)
-                label = self.files[key]+ ", adjustment: %.3f m" % meanErr
+                    diff = gelev_t - newDatum
+                    # Remove NaNs
+                    diff = diff[~np.isnan(diff)]
+                    meanErr = np.mean(diff)
+                    # adjust the time series
+                    elev = elev + meanErr
+                    print("Adjustment: %.3f m" % meanErr)
+                    label = self.files[key]+ ", adjustment: %.3f m" % meanErr
 
             if timeframe:
                 id1 = (np.abs(time - timeframe[0])).argmin()
@@ -197,12 +198,14 @@ class Storm():
 
 
         # Plot appearance configuration
-        plt.legend(loc='best', framealpha=0.0)
-        plt.xlabel('Time (days)', fontsize=15)
-        plt.ylabel('Surface elevation (m)', fontsize=15)
-        plt.xticks(fontsize=13)
-        plt.yticks(fontsize=13)
+        plt.legend(loc='best', framealpha=alpha, frameon=True, edgecolor='black')
+        plt.xlabel('Time (days)')
+        plt.ylabel('Surface elevation (m)')
+        #plt.xticks(fontsize=13)
+        #plt.yticks(fontsize=13)
+        plt.grid(grid)
         plt.show()
+
 
     def plotFuzzy(self, name, *args):
         index = self.gauges.searchGauge(name)
